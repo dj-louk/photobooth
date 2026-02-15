@@ -1,53 +1,100 @@
-import { useEffect } from "react";
+import { useRef } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { Toaster } from "@/components/ui/sonner";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Photobooth Pages
+import WelcomeScreen from "@/pages/photobooth/WelcomeScreen";
+import GroupNameScreen from "@/pages/photobooth/GroupNameScreen";
+import PhotoSequenceScreen from "@/pages/photobooth/PhotoSequenceScreen";
+import PreviewScreen from "@/pages/photobooth/PreviewScreen";
+import ProcessingScreen from "@/pages/photobooth/ProcessingScreen";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+// Station Pages
+import StationSearch from "@/pages/station/StationSearch";
+import StationGallery from "@/pages/station/StationGallery";
+import TVInstructions from "@/pages/station/TVInstructions";
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
+// Admin Pages
+import AdminLogin from "@/pages/admin/AdminLogin";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminEvents from "@/pages/admin/AdminEvents";
+import AdminSettings from "@/pages/admin/AdminSettings";
+import AdminGroups from "@/pages/admin/AdminGroups";
+import AuthCallback from "@/pages/admin/AuthCallback";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+// Public Gallery
+import PublicGallery from "@/pages/public/PublicGallery";
+
+// Router with session_id detection
+function AppRouter() {
+  const location = useLocation();
+  
+  // Check for session_id in URL fragment SYNCHRONOUSLY (before render)
+  if (location.hash?.includes('session_id=')) {
+    return <AuthCallback />;
+  }
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
+    <Routes>
+      {/* Photobooth Interface */}
+      <Route path="/" element={<WelcomeScreen />} />
+      <Route path="/photobooth" element={<WelcomeScreen />} />
+      <Route path="/photobooth/group" element={<GroupNameScreen />} />
+      <Route path="/photobooth/capture" element={<PhotoSequenceScreen />} />
+      <Route path="/photobooth/preview" element={<PreviewScreen />} />
+      <Route path="/photobooth/processing" element={<ProcessingScreen />} />
+      
+      {/* Station Interface */}
+      <Route path="/station" element={<StationSearch />} />
+      <Route path="/station/gallery/:groupId" element={<StationGallery />} />
+      <Route path="/tv" element={<TVInstructions />} />
+      
+      {/* Public Gallery (QR Code destination) */}
+      <Route path="/gallery/:groupId" element={<PublicGallery />} />
+      
+      {/* Admin Interface */}
+      <Route path="/admin" element={<AdminLogin />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={
+        <ProtectedRoute>
+          <AdminDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/events" element={
+        <ProtectedRoute>
+          <AdminEvents />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/settings" element={
+        <ProtectedRoute>
+          <AdminSettings />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/groups" element={
+        <ProtectedRoute>
+          <AdminGroups />
+        </ProtectedRoute>
+      } />
+    </Routes>
   );
-};
+}
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <ThemeProvider defaultTheme="dark">
+      <AuthProvider>
+        <div className="App min-h-screen bg-background text-foreground">
+          <BrowserRouter>
+            <AppRouter />
+          </BrowserRouter>
+          <Toaster position="top-center" richColors />
+        </div>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
