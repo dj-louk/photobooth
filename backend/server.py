@@ -482,8 +482,14 @@ async def increment_download(group_id: str):
 
 # ============ PHOTOS ROUTES ============
 
+class PhotoUploadRequest(BaseModel):
+    photo_data: str
+
+class PhotoBatchRequest(BaseModel):
+    photos: List[str]
+
 @api_router.post("/photos")
-async def upload_photo(group_id: str, photo_data: str):
+async def upload_photo(group_id: str, request: PhotoUploadRequest):
     """Upload a photo (base64 encoded)"""
     group = await db.groups.find_one({"group_id": group_id}, {"_id": 0})
     if not group:
@@ -493,7 +499,7 @@ async def upload_photo(group_id: str, photo_data: str):
         group_id=group_id,
         event_id=group["event_id"],
         filename=f"photo_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg",
-        data=photo_data
+        data=request.photo_data
     )
     
     doc = photo.model_dump()
@@ -512,14 +518,14 @@ async def upload_photo(group_id: str, photo_data: str):
     return {"photo_id": photo.photo_id, "filename": photo.filename}
 
 @api_router.post("/photos/batch")
-async def upload_photos_batch(group_id: str, photos: List[str]):
+async def upload_photos_batch(group_id: str, request: PhotoBatchRequest):
     """Upload multiple photos at once"""
     group = await db.groups.find_one({"group_id": group_id}, {"_id": 0})
     if not group:
         raise HTTPException(status_code=404, detail="Groupe non trouvé")
     
     photo_ids = []
-    for i, photo_data in enumerate(photos):
+    for i, photo_data in enumerate(request.photos):
         photo = Photo(
             group_id=group_id,
             event_id=group["event_id"],
@@ -536,7 +542,7 @@ async def upload_photos_batch(group_id: str, photos: List[str]):
     await db.groups.update_one(
         {"group_id": group_id},
         {
-            "$inc": {"photo_count": len(photos)},
+            "$inc": {"photo_count": len(request.photos)},
             "$push": {"photos": {"$each": photo_ids}}
         }
     )
