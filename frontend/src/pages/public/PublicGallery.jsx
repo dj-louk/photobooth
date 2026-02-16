@@ -17,6 +17,11 @@ const PublicGallery = () => {
     loadData();
   }, [groupId]);
 
+  useEffect(() => {
+  loadGroups();
+}, [loadGroups]); // ajout de loadGroups
+
+
   const loadData = async () => {
     try {
       const [groupData, photosData] = await Promise.all([
