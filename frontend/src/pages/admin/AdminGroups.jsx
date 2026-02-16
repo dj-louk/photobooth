@@ -39,6 +39,11 @@ const AdminGroups = () => {
     loadGroups();
   }, [selectedEvent]);
 
+  useEffect(() => {
+  loadGroups();
+}, [loadGroups]); // ajout de loadGroups
+
+
   const loadData = async () => {
     try {
       const eventsData = await eventsApi.getAll();
