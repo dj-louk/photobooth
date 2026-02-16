@@ -28,8 +28,6 @@ import PublicGallery from "@/pages/public/PublicGallery";
 // Router with session_id detection
 function AppRouter() {
   const location = useLocation();
-  
-  
 
   return (
     <Routes>
@@ -46,15 +44,19 @@ function AppRouter() {
       <Route path="/station/gallery/:groupId" element={<StationGallery />} />
       <Route path="/tv" element={<TVInstructions />} />
       
-      {/* Public Gallery (QR Code destination) */}
+      {/* Public Gallery */}
       <Route path="/gallery/:groupId" element={<PublicGallery />} />
       
       {/* Admin Interface */}
-<Route path="/admin" element={<AdminDashboard />} />
-<Route path="/admin/dashboard" element={<AdminDashboard />} />
-<Route path="/admin/events" element={<AdminEvents />} />
-<Route path="/admin/settings" element={<AdminSettings />} />
-<Route path="/admin/groups" element={<AdminGroups />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/events" element={<AdminEvents />} />
+      <Route path="/admin/settings" element={<AdminSettings />} />
+      <Route path="/admin/groups" element={<AdminGroups />} />
+    </Routes>
+  );
+}
+
 
 
 function App() {
