@@ -2,7 +2,6 @@ import { useRef } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 
 // Photobooth Pages
@@ -18,13 +17,10 @@ import StationGallery from "@/pages/station/StationGallery";
 import TVInstructions from "@/pages/station/TVInstructions";
 
 // Admin Pages
-import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminEvents from "@/pages/admin/AdminEvents";
 import AdminSettings from "@/pages/admin/AdminSettings";
 import AdminGroups from "@/pages/admin/AdminGroups";
-import AuthCallback from "@/pages/admin/AuthCallback";
-import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Public Gallery
 import PublicGallery from "@/pages/public/PublicGallery";
@@ -33,10 +29,7 @@ import PublicGallery from "@/pages/public/PublicGallery";
 function AppRouter() {
   const location = useLocation();
   
-  // Check for session_id in URL fragment SYNCHRONOUSLY (before render)
-  if (location.hash?.includes('session_id=')) {
-    return <AuthCallback />;
-  }
+  
 
   return (
     <Routes>
@@ -57,43 +50,23 @@ function AppRouter() {
       <Route path="/gallery/:groupId" element={<PublicGallery />} />
       
       {/* Admin Interface */}
-      <Route path="/admin" element={<AdminLogin />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/dashboard" element={
-        <ProtectedRoute>
-          <AdminDashboard />
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/events" element={
-        <ProtectedRoute>
-          <AdminEvents />
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/settings" element={
-        <ProtectedRoute>
-          <AdminSettings />
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/groups" element={
-        <ProtectedRoute>
-          <AdminGroups />
-        </ProtectedRoute>
-      } />
-    </Routes>
-  );
-}
+<Route path="/admin" element={<AdminDashboard />} />
+<Route path="/admin/dashboard" element={<AdminDashboard />} />
+<Route path="/admin/events" element={<AdminEvents />} />
+<Route path="/admin/settings" element={<AdminSettings />} />
+<Route path="/admin/groups" element={<AdminGroups />} />
+
 
 function App() {
   return (
     <ThemeProvider defaultTheme="dark">
-      <AuthProvider>
-        <div className="App min-h-screen bg-background text-foreground">
-          <BrowserRouter>
-            <AppRouter />
-          </BrowserRouter>
-          <Toaster position="top-center" richColors />
-        </div>
-      </AuthProvider>
+      <div className="App min-h-screen bg-background text-foreground">
+  <BrowserRouter>
+    <AppRouter />
+  </BrowserRouter>
+  <Toaster position="top-center" richColors />
+</div>
+
     </ThemeProvider>
   );
 }
