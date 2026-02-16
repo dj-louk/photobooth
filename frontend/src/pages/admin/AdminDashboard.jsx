@@ -110,13 +110,13 @@ const AdminDashboard = () => {
         </nav>
 
         {/* Theme Selector */}
-        <div className="absolute bottom-24 left-6 right-6">
+        <div className="absolute bottom-24 left-6 right-6 z-50">
           <p className="text-sm text-muted-foreground mb-2">Thème</p>
           <Select value={theme} onValueChange={setTheme}>
-            <SelectTrigger data-testid="theme-selector">
+            <SelectTrigger data-testid="theme-selector" className="relative z-50">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[100]">
               <SelectItem value="dark">Sombre (Club)</SelectItem>
               <SelectItem value="light">Clair</SelectItem>
               <SelectItem value="louk-party">LOUK Party</SelectItem>
