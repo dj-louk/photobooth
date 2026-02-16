@@ -11,6 +11,12 @@
   ],
   "routes": [
     {
+      "src": "/admin$",
+      "status": 302,
+      "headers": { "Location": "/admin/dashboard" },
+      "continue": true
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
