@@ -5,7 +5,6 @@ import {
   LayoutDashboard, Camera, Users, Settings, Image, LogOut,
   Calendar, TrendingUp, Clock, Download
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +12,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { statsApi, eventsApi } from '@/lib/api';
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
+    const [authorized, setAuthorized] = useState(false);
+  const [checkedAuth, setCheckedAuth] = useState(false);
+
+  useEffect(() => {
+    const password = prompt("Mot de passe admin :");
+
+    if (password === "photobooth2026") {
+      setAuthorized(true);
+    }
+
+    setCheckedAuth(true);
+  }, []);
+
+  if (!checkedAuth) return null;
+
+  if (!authorized) {
+    return (
+      <div style={{ padding: "40px" }}>
+        <h2>Accès refusé</h2>
+      </div>
+    );
+  }
+
   const { theme, setTheme, themes } = useTheme();
   const navigate = useNavigate();
   
@@ -34,10 +55,6 @@ const AdminDashboard = () => {
     loadStats();
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/admin/login');
-  };
 
   const statCards = [
     {
@@ -127,18 +144,14 @@ const AdminDashboard = () => {
         {/* User & Logout */}
         <div className="absolute bottom-6 left-6 right-6">
           <div className="flex items-center gap-3 mb-4">
-            {user?.picture && (
-              <img src={user.picture} alt={user.name} className="w-10 h-10 rounded-full" />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{user?.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-            </div>
+            <div className="mb-4">
+  <p className="font-medium">Admin</p>
+</div>
           </div>
           <Button 
             data-testid="logout-btn"
             variant="outline" 
-            onClick={handleLogout} 
+            onClick={() => navigate('/')}
             className="w-full"
           >
             <LogOut className="w-4 h-4 mr-2" />
