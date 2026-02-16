@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
@@ -14,8 +14,17 @@ const ProcessingScreen = () => {
   const [status, setStatus] = useState('processing'); // processing, success, error
   const [group, setGroup] = useState(null);
   const [error, setError] = useState('');
+  
+  // Prevent double execution
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // Prevent double execution in StrictMode
+    if (hasProcessed.current) {
+      return;
+    }
+    hasProcessed.current = true;
+
     const processPhotos = async () => {
       if (!event || !groupData || !photos) {
         setError('Données manquantes');
